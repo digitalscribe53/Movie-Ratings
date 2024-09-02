@@ -1,0 +1,98 @@
+{{#if movie}}
+  <div class="movie-details container">
+    <div class="columns">
+      <div class="column is-one-quarter">
+        <div class="card">
+          <div class="card-image">
+            <figure class="image is-3by4">
+              <img src="{{movie.imageSrc}}" alt="{{movie.title}}">
+            </figure>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <h1 class="title is-3">{{movie.title}}</h1>
+        <div class="rating" data-rating="{{movie.averageRating}}">
+          <!-- Stars will be generated here by JavaScript -->
+        </div>
+        <p class="subtitle is-5">Release Year: {{movie.releaseYear}}</p>
+        <article class="content">
+          <h2 class="subtitle is-4">Description</h2>
+          <p>{{movie.description}}</p>
+        </article>
+        {{#if ../loggedIn}}
+          <div class="field">
+            <label class="label">Your Rating</label>
+            <div class="control">
+              <div class="select">
+                <select id="user-rating">
+                  <option value="">Select a rating</option>
+                  <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="button is-primary" id="submit-rating">Submit Rating</button>
+        {{else}}
+          <p><a href="/login">Log in</a> to rate this movie.</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const ratingElement = document.querySelector('.rating');
+      const rating = parseFloat(ratingElement.getAttribute('data-rating'));
+      renderStars(ratingElement, rating);
+
+      {{#if ../loggedIn}}
+      document.getElementById('submit-rating').addEventListener('click', async function() {
+        const rating = document.getElementById('user-rating').value;
+        if (rating) {
+          try {
+            const response = await fetch('/api/movies/{{movie.id}}/rate', {
+              method: 'POST',
+              body: JSON.stringify({ rating }),
+              headers: { 'Content-Type': 'application/json' },
+            });
+            if (response.ok) {
+              alert('Rating submitted successfully!');
+              location.reload();
+            } else {
+              throw new Error('Failed to submit rating');
+            }
+          } catch (error) {
+            alert('Error submitting rating: ' + error.message);
+          }
+        } else {
+          alert('Please select a rating before submitting.');
+        }
+      });
+      {{/if}}
+    });
+
+    function renderStars(element, rating) {
+      element.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.classList.add('star');
+        if (rating >= i) {
+          star.classList.add('full');
+        } else if (rating >= i - 0.5) {
+          star.classList.add('half');
+        }
+        star.innerHTML = '★';
+        element.appendChild(star);
+      }
+    }
+  </script>
+{{else}}
+  <div class="container">
+    <p class="has-text-centered">Movie not found.</p>
+  </div>
+{{/if}}

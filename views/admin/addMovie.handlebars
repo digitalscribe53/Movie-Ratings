@@ -1,0 +1,37 @@
+<h1 class="title">Add New Movie</h1>
+
+<form action="/admin/add-movie" method="POST">
+    <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+            <input class="input" type="text" name="title" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Description</label>
+        <div class="control">
+            <textarea class="textarea" name="description" required></textarea>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Release Year</label>
+        <div class="control">
+            <input class="input" type="number" name="releaseYear" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Image URL</label>
+        <div class="control">
+            <input class="input" type="url" name="imageSrc" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="control">
+            <button class="button is-primary" type="submit">Add Movie</button>
+        </div>
+    </div>
+</form>

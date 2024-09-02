@@ -1,0 +1,13 @@
+<div class="container">
+  <h1 class="title">Welcome to Movie Ratings</h1>
+
+  {{#if movies.length}}
+    <div class="columns is-multiline">
+      {{#each movies}}
+        {{> movieCard}}
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No movies found.</p>
+  {{/if}}
+</div>
