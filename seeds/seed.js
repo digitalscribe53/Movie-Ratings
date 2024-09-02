@@ -1,21 +1,22 @@
 const sequelize = require('../config/connection');
-const { User } = require('../models');
-
-const userData = [
-  {
-    username: 'admin',
-    password: 'adminpassword',
-    isAdmin: true,
-  },
-];
+const { User, Movie } = require('../models');
 
 const seedDatabase = async () => {
   await sequelize.sync({ force: true });
 
-  await User.bulkCreate(userData, {
+  const users = await User.bulkCreate([
+    {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+      isAdmin: true,
+    },
+    // ... other users ...
+  ], {
     individualHooks: true,
     returning: true,
   });
+
+  // ... seed other data ...
 
   process.exit(0);
 };

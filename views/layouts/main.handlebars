@@ -19,14 +19,19 @@
             <div class="navbar-item">
                 <div class="buttons">
                     {{#if logged_in}}
-                    <button class="button is-light" id="logout">Logout</button>
+                        {{#if isAdmin}}
+                            <a class="button is-info" href="/admin">
+                                Admin Dashboard
+                            </a>
+                        {{/if}}
+                        <button class="button is-light" id="logout">Logout</button>
                     {{else}}
-                    <a class="button is-primary" href="/auth/login">
-                        <strong>Log in</strong>
-                    </a>
-                    <a class="button is-light" href="/auth/signup">
-                        Sign up
-                    </a>
+                        <a class="button is-primary" href="/auth/login">
+                            <strong>Log in</strong>
+                        </a>
+                        <a class="button is-light" href="/auth/signup">
+                            Sign up
+                        </a>
                     {{/if}}
                 </div>
             </div>

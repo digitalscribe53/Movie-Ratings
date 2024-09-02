@@ -1,12 +1,28 @@
 const router = require('express').Router();
-const adminController = require('../controllers/adminController');
-const authMiddleware = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middleware/adminMiddleware');
+const { Movie } = require('../models');
 
-// Assuming you have an isAdmin middleware
-router.use(authMiddleware.isAdmin);
+router.use(adminMiddleware);
 
-router.get('/add-movie', adminController.renderAddMovie);
-router.post('/add-movie', adminController.addMovie);
-router.get('/movies', adminController.listMovies);
+router.get('/', (req, res) => {
+  res.render('admin/dashboard', {
+    layout: 'admin'
+  });
+});
+
+router.get('/add-movie', (req, res) => {
+  res.render('admin/addMovie', {
+    layout: 'admin'
+  });
+});
+
+router.post('/add-movie', async (req, res) => {
+  try {
+    await Movie.create(req.body);
+    res.redirect('/admin');
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 module.exports = router;
