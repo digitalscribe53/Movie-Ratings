@@ -8,11 +8,16 @@ router.get('/test', (req, res) => {
 
 // GET route for login page
 router.get('/login', (req, res) => {
-  if (req.session.logged_in) {
-    res.redirect('/');
-    return;
+  if (req.session.loggedIn) {
+      res.redirect('/');
+      return;
   }
-  res.render('login');
+  
+  const redirect = req.query.redirect || '/';
+  res.render('login', {
+      redirect,
+      pageTitle: 'Login'
+  });
 });
 
 // GET route for signup page
@@ -49,29 +54,37 @@ router.post('/signup', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   try {
-    const userData = await User.findOne({ where: { username: req.body.username } });
-    if (!userData) {
-      res.status(400).json({ message: 'Incorrect username or password' });
-      return;
-    }
-    const validPassword = await userData.checkPassword(req.body.password);
-    if (!validPassword) {
-      res.status(400).json({ message: 'Incorrect username or password' });
-      return;
-    }
-    req.session.save(() => {
-      req.session.user_id = userData.id;
-      req.session.logged_in = true;
-      req.session.isAdmin = userData.isAdmin;
-      
-      if (userData.isAdmin) {
-        res.json({ user: userData, message: 'You are now logged in!', redirect: '/admin' });
-      } else {
-        res.json({ user: userData, message: 'You are now logged in!', redirect: '/' });
+      const userData = await User.findOne({ 
+          where: { username: req.body.username } 
+      });
+
+      if (!userData) {
+          res.status(400).json({ message: 'Incorrect username or password' });
+          return;
       }
-    });
+
+      const validPassword = await userData.checkPassword(req.body.password);
+
+      if (!validPassword) {
+          res.status(400).json({ message: 'Incorrect username or password' });
+          return;
+      }
+
+      req.session.save(() => {
+          req.session.user_id = userData.id;
+          req.session.logged_in = true;
+          req.session.isAdmin = userData.isAdmin;
+
+          // Send single response with appropriate redirect
+          res.json({ 
+              user: userData, 
+              message: 'You are now logged in!', 
+              redirect: userData.isAdmin ? '/admin' : (req.body.redirect || '/')
+          });
+      });
   } catch (err) {
-    res.status(400).json(err);
+      console.error('Login error:', err);
+      res.status(400).json({ message: 'Login failed', error: err.message });
   }
 });
 

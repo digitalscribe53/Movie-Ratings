@@ -57,8 +57,7 @@ app.use((req, res, next) => {
 });
 
 // Use routes
-console.log('Setting up auth routes');
-app.use('/auth', authRoutes);
+
 console.log('Setting up admin routes'); 
 app.use('/admin', adminRoutes);
 console.log('Setting up main routes');
@@ -67,13 +66,11 @@ app.use('/', routes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
-// Catch-all route for undefined routes
-app.use((req, res) => {
-  console.log(`404 - Route not found: ${req.method} ${req.url}`);
-  res.status(404).send("Page not found");
+  res.status(500).render('error', {
+      title: 'Error',
+      message: 'Something went wrong!',
+      pageTitle: 'Error'
+  });
 });
 
 // Sync sequelize models to the database, then turn on the server

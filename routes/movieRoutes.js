@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
             movies: rows,
             currentPage: page,
             totalPages,
-            loggedIn: req.session.loggedIn,
+            logged_in: req.session.logged_in,
             pageTitle: 'All Movies'
         });
     } catch (err) {
@@ -46,19 +46,29 @@ router.get('/:id', async (req, res) => {
         });
 
         if (!movieData) {
-            res.status(404).json({ message: 'No movie found with this id!' });
+            res.status(404).render('movieDetails', { 
+                message: 'Movie not found',
+                logged_in: req.session.logged_in 
+            });
             return;
         }
 
         const movie = movieData.get({ plain: true });
+        
+        // Debug log to check session state
+        console.log('Session state:', {
+            logged_in: req.session.logged_in,
+            user_id: req.session.user_id
+        });
 
         res.render('movieDetails', {
-            ...movie,
-            loggedIn: req.session.loggedIn,
+            movie,
+            logged_in: req.session.logged_in,
+            user_id: req.session.user_id,
             pageTitle: movie.title
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error:', err);
         res.status(500).json(err);
     }
 });
@@ -113,11 +123,15 @@ router.delete('/:id', authMiddleware.verifyToken, authMiddleware.isAdmin, async 
 });
 
 // Rate a movie (protected route)
-router.post('/:id/rate', authMiddleware.verifyToken, async (req, res) => {
+router.post('/:id/rate', async (req, res) => {
     try {
+        if (!req.session.logged_in) {
+            return res.status(401).json({ message: 'Please log in to rate movies' });
+        }
+
         const { rating } = req.body;
         const movieId = req.params.id;
-        const userId = req.user.id;
+        const userId = req.session.user_id;
 
         const [ratingRecord, created] = await Rating.findOrCreate({
             where: { movieId, userId },

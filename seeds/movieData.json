@@ -1,0 +1,32 @@
+{
+    "movies": [
+      {
+        "title": "The Grand Budapest Hotel",
+        "description": "A story of a legendary concierge at a famous European hotel and his friendship with a young employee who becomes his most trusted protégé.",
+        "releaseYear": 2014,
+        "imageSrc": "/images/static/grand_budapest.jpg",
+        "averageRating": 5
+      },
+      {
+        "title": "Saving Private Ryan",
+        "description": "Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.",
+        "releaseYear": 1998,
+        "imageSrc": "/images/static/saving_private_ryan___.jpg",
+        "averageRating": 4
+      },
+      {
+        "title": "The Favourite",
+        "description": "In early 18th century England, a frail Queen Anne occupies the throne and her close friend, Lady Sarah, governs the country in her stead.",
+        "releaseYear": 2018,
+        "imageSrc": "/images/static/the_favourite___.png",
+        "averageRating": 4
+      },
+      {
+        "title": "The Big Lebowski",
+        "description": "The Dude seeks recompense for his ruined rug and enlists his bowling buddies to help get it.",
+        "releaseYear": 1998,
+        "imageSrc": "/images/static/the-big-lebowski-movie-poster.jpg",
+        "averageRating": 5
+      }
+    ]
+  }

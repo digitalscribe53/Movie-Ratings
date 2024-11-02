@@ -66,6 +66,16 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.2s ease-in-out;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+.movie-link {
+    color: inherit;
+    text-decoration: none;
 }
 
 .image.is-3by4 {

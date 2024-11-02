@@ -5,30 +5,37 @@ const movieController = {
   // Get details of a specific movie
   getMovieDetails: async (req, res) => {
     try {
-      const movieId = req.params.id;
-      const movie = await Movie.findByPk(movieId, {
-        include: [{ model: Rating, attributes: ['rating'] }]
-      });
+        const movieId = req.params.id;
+        const movie = await Movie.findByPk(movieId);
 
-      if (!movie) {
-        return res.status(404).render('error', { message: 'Movie not found' });
-      }
+        if (!movie) {
+            return res.status(404).render('error', { message: 'Movie not found' });
+        }
 
-      // Calculate average rating
-      const avgRating = movie.Ratings.length > 0
-        ? movie.Ratings.reduce((sum, r) => sum + r.rating, 0) / movie.Ratings.length
-        : 0;
+        // Get ratings separately
+        const ratings = await Rating.findAll({
+            where: { movieId: movie.id }
+        });
 
-      res.render('movieDetails', { 
-        movie, 
-        avgRating: avgRating.toFixed(1),
-        pageTitle: movie.title 
-      });
+        const avgRating = ratings.length > 0
+            ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+            : 0;
+
+        const movieData = movie.get({ plain: true });
+
+        res.render('movieDetails', {
+            movie: {
+                ...movieData,
+                averageRating: avgRating.toFixed(1)
+            },
+            loggedIn: req.session.loggedIn,
+            pageTitle: movieData.title
+        });
     } catch (error) {
-      console.error('Error fetching movie details:', error);
-      res.status(500).render('error', { message: 'Error fetching movie details' });
+        console.error('Error fetching movie details:', error);
+        res.status(500).render('error', { message: 'Error fetching movie details' });
     }
-  },
+},
 
   // Add a new movie
   addMovie: async (req, res) => {

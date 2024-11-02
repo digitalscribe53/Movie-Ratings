@@ -1,9 +1,27 @@
-const User = require('./User');
 const Movie = require('./Movie');
+const Rating = require('./Rating');
+const User = require('./User');
 
-// Define associations here if needed
-// For example:
-// User.hasMany(Movie);
-// Movie.belongsTo(User);
+// User-Rating Association
+User.hasMany(Rating, {
+  foreignKey: 'userId',
+  onDelete: 'CASCADE'
+});
+Rating.belongsTo(User, {
+  foreignKey: 'userId'
+});
 
-module.exports = { User, Movie };
+// Movie-Rating Association
+Movie.hasMany(Rating, {
+  foreignKey: 'movieId',
+  onDelete: 'CASCADE'
+});
+Rating.belongsTo(Movie, {
+  foreignKey: 'movieId'
+});
+
+module.exports = {
+  Movie,
+  Rating,
+  User
+};

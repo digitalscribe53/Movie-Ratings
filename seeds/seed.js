@@ -1,24 +1,36 @@
 const sequelize = require('../config/connection');
-const { User, Movie } = require('../models');
+const { User, Movie, Rating } = require('../models');
+const movieData = require('./movieData.json');
 
 const seedDatabase = async () => {
-  await sequelize.sync({ force: true });
+  try {
+    // Sync and reset database
+    await sequelize.sync({ force: true });
+    console.log('Database synced!');
 
-  const users = await User.bulkCreate([
-    {
-      username: process.env.ADMIN_USERNAME,
-      password: process.env.ADMIN_PASSWORD,
-      isAdmin: true,
-    },
-    // ... other users ...
-  ], {
-    individualHooks: true,
-    returning: true,
-  });
+    // Create admin user
+    const users = await User.bulkCreate([
+      {
+        username: process.env.ADMIN_USERNAME,
+        password: process.env.ADMIN_PASSWORD,
+        isAdmin: true,
+      }
+    ], {
+      individualHooks: true,
+      returning: true,
+    });
+    console.log('Admin user created!');
 
-  // ... seed other data ...
+    // Create movies
+    await Movie.bulkCreate(movieData.movies);
+    console.log('Movies seeded!');
 
-  process.exit(0);
+    console.log('Database seeding completed successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error seeding database:', error);
+    process.exit(1);
+  }
 };
 
 seedDatabase();

@@ -5,18 +5,31 @@ const loginFormHandler = async (event) => {
   const password = document.querySelector('#password-login').value.trim();
 
   if (username && password) {
-    const response = await fetch('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+      try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirect = urlParams.get('redirect') || '/';
 
-    if (response.ok) {
-      const data = await response.json();
-      document.location.replace(data.redirect);
-    } else {
-      alert('Failed to log in');
-    }
+          const response = await fetch('/auth/login', {
+              method: 'POST',
+              body: JSON.stringify({ 
+                  username, 
+                  password,
+                  redirect
+              }),
+              headers: { 'Content-Type': 'application/json' },
+          });
+
+          if (response.ok) {
+              const data = await response.json();
+              // Use the redirect URL from the server response
+              document.location.replace(data.redirect);
+          } else {
+              const errorData = await response.json();
+              alert(errorData.message || 'Failed to log in');
+          }
+      } catch (error) {
+          alert('An error occurred during login');
+      }
   }
 };
 
