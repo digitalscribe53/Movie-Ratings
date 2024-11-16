@@ -1,21 +1,24 @@
-<div class="container mt-4">
-    <div class="columns is-centered">
-        <div class="column is-half">
-            <form id="search-form" class="mb-5">
-                <div class="field has-addons">
-                    <div class="control is-expanded">
-                        <input class="input is-medium" type="text" id="search-input" name="search" placeholder="Search for movies...">
+<div class="hero-banner">
+    <div class="container mt-4">
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <form id="search-form" class="mb-5">
+                    <div class="field has-addons">
+                        <div class="control is-expanded">
+                            <input class="input is-medium" type="text" id="search-input" name="search" placeholder="Search for movies...">
+                        </div>
+                        <div class="control">
+                            <button class="button is-primary is-medium" type="submit">
+                                Search
+                            </button>
+                        </div>
                     </div>
-                    <div class="control">
-                        <button class="button is-primary is-medium" type="submit">
-                            Search
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-
+</div>
+<div class="container">
     <!-- Movies grid -->
     <div class="columns is-multiline">
         {{#each movies}}
