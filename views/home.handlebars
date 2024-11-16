@@ -1,13 +1,54 @@
-<div class="container">
-  <h1 class="title">Welcome to Movie Ratings</h1>
-
-  {{#if movies.length}}
-    <div class="columns is-multiline">
-      {{#each movies}}
-        {{> movieCard}}
-      {{/each}}
+<div class="container mt-4">
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <form id="search-form" class="mb-5">
+                <div class="field has-addons">
+                    <div class="control is-expanded">
+                        <input class="input is-medium" type="text" id="search-input" name="search" placeholder="Search for movies...">
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary is-medium" type="submit">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-  {{else}}
-    <p>No movies found.</p>
-  {{/if}}
+
+    <!-- Movies grid -->
+    <div class="columns is-multiline">
+        {{#each movies}}
+            {{> movieCard}}
+        {{/each}}
+    </div>
+
+    <!-- Pagination -->
+    <nav class="pagination is-centered mt-6" role="navigation" aria-label="pagination">
+        {{#if hasPreviousPage}}
+            <a href="/?page={{previousPage}}{{#if searchTerm}}&search={{searchTerm}}{{/if}}" 
+               class="pagination-previous">Previous</a>
+        {{else}}
+            <a class="pagination-previous" disabled>Previous</a>
+        {{/if}}
+
+        {{#if hasNextPage}}
+            <a href="/?page={{nextPage}}{{#if searchTerm}}&search={{searchTerm}}{{/if}}" 
+               class="pagination-next">Next</a>
+        {{else}}
+            <a class="pagination-next" disabled>Next</a>
+        {{/if}}
+
+        <ul class="pagination-list">
+            {{#each pages}}
+                <li>
+                    <a href="/?page={{this}}{{#if ../searchTerm}}&search={{../searchTerm}}{{/if}}" 
+                       class="pagination-link {{#if (eq this ../currentPage)}}is-current{{/if}}" 
+                       aria-label="Page {{this}}">
+                        {{this}}
+                    </a>
+                </li>
+            {{/each}}
+        </ul>
+    </nav>
 </div>
