@@ -1,3 +1,72 @@
+.navbar {
+    padding: 1rem 2rem;
+    height: auto !important;
+    min-height: 4rem;
+}
+
+.site-title-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+}
+
+.site-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: #363636;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.tmdb-logo {
+    height: 2.5rem;
+    width: auto;
+    margin-left: 0.5rem;
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+/* Update existing navbar styles */
+.navbar-brand {
+    width: 100%;
+    justify-content: center;
+}
+
+.navbar-item {
+    justify-content: center;
+}
+
+.navbar-start {
+    position: absolute;
+    left: 1rem;
+    z-index: 1;
+}
+
+.navbar-start .navbar-item {
+    padding: 0;
+}
+
+.navbar-start .button {
+    height: 40px;
+    padding: 0 1.5rem;
+}
+
+/* Ensure buttons stay on the right */
+.navbar-end {
+    margin-left: 0 !important;
+    position: absolute;
+    right: 1rem;
+}
+
 .card-image.fixed-size figure.image {
     position: absolute;
     top: 0;
@@ -209,6 +278,14 @@ main {
 
 /* Mobile styles */
 @media screen and (max-width: 768px) {
+    .site-title {
+        font-size: 2rem;
+    }
+
+    .tmdb-logo {
+        height: 2rem;
+    }
+    
     .column.is-6-mobile {
         padding: 0.5rem;
     }
