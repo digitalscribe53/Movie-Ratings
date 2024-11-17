@@ -12,17 +12,10 @@
 </head>
 <body class="has-navbar-fixed-top d-flex flex-column min-vh-100">
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-mobile-top">
         <a href="/" class="navbar-item home-button">
             <button class="button is-primary">Home</button>
         </a>
-
-        <div class="navbar-brand is-flex-grow-1">
-            <div class="navbar-item site-title-container">
-                <span class="site-title">Movie Ratings Powered by</span>
-                <img src="/images/static/tmdblogo.svg" alt="TMDB Logo" class="tmdb-logo">
-            </div>
-        </div>
-
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
@@ -37,14 +30,19 @@
                         <a class="button is-primary" href="/auth/login">
                             <strong>Log in</strong>
                         </a>
-                        <a class="button is-light" href="/auth/signup">
-                            Sign up
-                        </a>
                     {{/if}}
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+
+    <div class="navbar-brand is-flex-grow-1">
+        <div class="navbar-item site-title-container">
+            <span class="site-title">Movie Ratings Powered by</span>
+            <img src="/images/static/tmdblogo.svg" alt="TMDB Logo" class="tmdb-logo">
+        </div>
+    </div>
+</nav>
 
     <main class="flex-grow-1">
         {{{body}}}
