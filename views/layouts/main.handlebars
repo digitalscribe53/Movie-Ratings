@@ -13,25 +13,17 @@
 <body class="has-navbar-fixed-top d-flex flex-column min-vh-100">
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-mobile-top">
-        <a href="/" class="navbar-item home-button">
-            <button class="button is-primary">Home</button>
-        </a>
+        <a href="/" class="navbar-item nav-link">Home</a>
         <div class="navbar-end">
             <div class="navbar-item">
-                <div class="buttons">
-                    {{#if logged_in}}
-                        {{#if isAdmin}}
-                            <a class="button is-info" href="/admin">
-                                Admin Dashboard
-                            </a>
-                        {{/if}}
-                        <button class="button is-light" id="logout">Logout</button>
-                    {{else}}
-                        <a class="button is-primary" href="/auth/login">
-                            <strong>Log in</strong>
-                        </a>
+                {{#if logged_in}}
+                    {{#if isAdmin}}
+                        <a href="/admin" class="nav-link admin-link">Admin Dashboard</a>
                     {{/if}}
-                </div>
+                    <button id="logout" class="nav-link">Logout</button>
+                {{else}}
+                    <a href="/auth/login" class="nav-link">Log in</a>
+                {{/if}}
             </div>
         </div>
     </div>
