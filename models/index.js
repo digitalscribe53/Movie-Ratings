@@ -1,27 +1,43 @@
+const User = require('./User');
 const Movie = require('./Movie');
 const Rating = require('./Rating');
-const User = require('./User');
+const Review = require('./Review');  
 
-// User-Rating Association
 User.hasMany(Rating, {
-  foreignKey: 'userId',
-  onDelete: 'CASCADE'
+    foreignKey: 'userId',
+    onDelete: 'CASCADE'
 });
+
 Rating.belongsTo(User, {
-  foreignKey: 'userId'
+    foreignKey: 'userId'
 });
 
-// Movie-Rating Association
 Movie.hasMany(Rating, {
-  foreignKey: 'movieId',
-  onDelete: 'CASCADE'
-});
-Rating.belongsTo(Movie, {
-  foreignKey: 'movieId'
+    foreignKey: 'movieId',
+    onDelete: 'CASCADE'
 });
 
-module.exports = {
-  Movie,
-  Rating,
-  User
-};
+Rating.belongsTo(Movie, {
+    foreignKey: 'movieId'
+});
+
+// Review associations
+User.hasMany(Review, {
+    foreignKey: 'userId',
+    onDelete: 'CASCADE'
+});
+
+Review.belongsTo(User, {
+    foreignKey: 'userId'
+});
+
+Movie.hasMany(Review, {
+    foreignKey: 'movieId',
+    onDelete: 'CASCADE'
+});
+
+Review.belongsTo(Movie, {
+    foreignKey: 'movieId'
+});
+
+module.exports = { User, Movie, Rating, Review };

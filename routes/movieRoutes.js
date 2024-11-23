@@ -1,8 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const { Movie, Rating, User } = require('../models');
+const { Movie, Rating, User, Review } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const { Op } = require('sequelize');
+const axios = require('axios');
+
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
+
+async function getMovieDetails(tmdbId) {
+    try {
+        // Get basic movie info including rating
+        const movieResponse = await axios.get(
+            `${BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
+        );
+
+        // Get reviews
+        const reviewsResponse = await axios.get(
+            `${BASE_URL}/movie/${tmdbId}/reviews?api_key=${TMDB_API_KEY}`
+        );
+
+        return {
+            tmdbRating: movieResponse.data.vote_average,
+            tmdbReviews: reviewsResponse.data.results,
+            voteCount: movieResponse.data.vote_count
+        };
+    } catch (error) {
+        console.error('Error fetching TMDB data:', error);
+        return {
+            tmdbRating: 0,
+            tmdbReviews: [],
+            voteCount: 0
+        };
+    }
+}
 
 // Get all movies (with pagination)
 router.get('/', async (req, res) => {
@@ -41,6 +72,10 @@ router.get('/:id', async (req, res) => {
                 {
                     model: Rating,
                     include: [{ model: User, attributes: ['username'] }]
+                },
+                {
+                    model: Review,
+                    include: [{ model: User, attributes: ['username'] }]
                 }
             ]
         });
@@ -55,14 +90,29 @@ router.get('/:id', async (req, res) => {
 
         const movie = movieData.get({ plain: true });
         
-        // Debug log to check session state
-        console.log('Session state:', {
-            logged_in: req.session.logged_in,
-            user_id: req.session.user_id
-        });
+        // Only try to get TMDB data if we have a valid tmdbId
+        let tmdbData = {
+            tmdbRating: 0,
+            tmdbReviews: [],
+            voteCount: 0
+        };
+
+        if (movie.tmdbId) {
+            try {
+                tmdbData = await getMovieDetails(movie.tmdbId);
+            } catch (error) {
+                console.error('Error fetching TMDB data:', error);
+                // Continue with default values if TMDB fetch fails
+            }
+        }
 
         res.render('movieDetails', {
-            movie,
+            movie: {
+                ...movie,
+                tmdbRating: tmdbData.tmdbRating,
+                tmdbReviews: tmdbData.tmdbReviews,
+                voteCount: tmdbData.voteCount
+            },
             logged_in: req.session.logged_in,
             user_id: req.session.user_id,
             pageTitle: movie.title

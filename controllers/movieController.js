@@ -1,5 +1,34 @@
 const { Movie, Rating } = require('../models');
+const axios = require('axios');
 const { Op } = require('sequelize');
+
+// TMDB API Constants
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
+
+// TMDB API Helper Function
+async function getMovieDetails(tmdbId) {
+  try {
+      // Get basic movie info including rating
+      const movieResponse = await axios.get(
+          `${BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
+      );
+
+      // Get reviews
+      const reviewsResponse = await axios.get(
+          `${BASE_URL}/movie/${tmdbId}/reviews?api_key=${TMDB_API_KEY}`
+      );
+
+      return {
+          tmdbRating: movieResponse.data.vote_average,
+          tmdbReviews: reviewsResponse.data.results,
+          voteCount: movieResponse.data.vote_count
+      };
+  } catch (error) {
+      console.error('Error fetching TMDB data:', error);
+      throw error;
+  }
+}
 
 const movieController = {
   // Get details of a specific movie

@@ -160,4 +160,44 @@ router.post('/logout', (req, res) => {
     });
 });
 
+router.get('/my-ratings', async (req, res) => {
+    try {
+        if (!req.session.logged_in) {
+            res.redirect('/auth/login');
+            return;
+        }
+
+        const userData = await User.findByPk(req.session.user_id, {
+            include: [
+                {
+                    model: Rating,
+                    include: [{ 
+                        model: Movie,
+                        attributes: ['id', 'title', 'imageSrc'] 
+                    }]
+                },
+                {
+                    model: Review,
+                    include: [{ 
+                        model: Movie,
+                        attributes: ['id', 'title', 'imageSrc'] 
+                    }],
+                    order: [['createdAt', 'DESC']]
+                }
+            ]
+        });
+
+        const user = userData.get({ plain: true });
+
+        res.render('userRatings', {
+            user,
+            logged_in: true,
+            pageTitle: 'My Movie Activity'
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json(err);
+    }
+});
+
 module.exports = router;

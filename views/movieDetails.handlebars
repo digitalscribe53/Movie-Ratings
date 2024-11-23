@@ -12,9 +12,19 @@
             </div>
             <div class="column">
                 <h1 class="title is-3">{{movie.title}}</h1>
-                <div class="rating" data-rating="{{movie.averageRating}}">
-                    <!-- Stars will be generated here by JavaScript -->
+                
+                <!-- TMDB Rating -->
+                <div class="tmdb-rating mb-4">
+                    <h3 class="subtitle is-5">TMDB Rating</h3>
+                    <p>⭐ {{movie.tmdbRating}}/10 ({{movie.voteCount}} votes)</p>
                 </div>
+
+                <!-- Site Rating -->
+                <div class="site-rating mb-4">
+                    <h3 class="subtitle is-5">Movie Ratings App Rating</h3>
+                    <div class="rating" data-rating="{{movie.averageRating}}"></div>
+                </div>
+
                 <p class="subtitle is-5">Release Year: {{movie.releaseYear}}</p>
                 <article class="content">
                     <h2 class="subtitle is-4">Description</h2>
@@ -22,7 +32,7 @@
                 </article>
 
                 {{#if logged_in}}
-                    <div class="rate-movie-section">
+                    <div class="rate-movie-section mb-5">
                         <h3 class="subtitle is-5">Rate this movie</h3>
                         <div class="field">
                             <label class="label">Your Rating</label>
@@ -41,15 +51,72 @@
                         </div>
                         <button class="button is-primary" id="submit-rating" data-movie-id="{{movie.id}}">Submit Rating</button>
                     </div>
+
+                    <!-- Review Form -->
+                    <div class="review-section mb-5">
+                        <h3 class="subtitle is-4">Write a Review</h3>
+                        <form id="review-form">
+                            <div class="field">
+                                <div class="control">
+                                    <textarea class="textarea" id="review-content" placeholder="Share your thoughts about this movie..."></textarea>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" class="button is-primary">Submit Review</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 {{else}}
-                    <p><a href="{{absolute '/auth/login'}}?redirect=/movies/{{movie.id}}">Log in</a> to rate this movie.</p>
+                    <p><a href="{{absolute '/auth/login'}}?redirect=/movies/{{movie.id}}">Log in</a> to rate and review this movie.</p>
                 {{/if}}
+
+                <!-- Reviews Display Section -->
+                <div class="reviews-section">
+                    <!-- Site Reviews -->
+                    <h3 class="title is-4">Movie Ratings App Reviews</h3>
+                    {{#if movie.Reviews.length}}
+                        {{#each movie.Reviews}}
+                            <div class="box review-box mb-4" data-review-id="{{id}}">
+                                <div class="content">
+                                    <p>{{content}}</p>
+                                    <p class="is-size-7">
+                                        By {{User.username}} on {{format_date createdAt}}
+                                        {{#if (eq User.id ../user_id)}}
+                                            <button class="button is-small is-info edit-review-btn">Edit</button>
+                                            <button class="button is-small is-danger delete-review-btn">Delete</button>
+                                        {{/if}}
+                                    </p>
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <p>No reviews yet. Be the first to review!</p>
+                    {{/if}}
+
+                    <!-- TMDB Reviews -->
+                    <h3 class="title is-4 mt-5">TMDB Reviews</h3>
+                    {{#if movie.tmdbReviews.length}}
+                        {{#each movie.tmdbReviews}}
+                            <div class="box review-box mb-4">
+                                <div class="content">
+                                    <p>{{content}}</p>
+                                    <p class="is-size-7">By {{author}} on {{created_at}}</p>
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <p>No TMDB reviews available.</p>
+                    {{/if}}
+                </div>
             </div>
         </div>
     </div>
 
     {{#if logged_in}}
     <script>
+        // Existing rating submission code
         document.getElementById('submit-rating').addEventListener('click', async function() {
             const rating = document.getElementById('user-rating').value;
             const movieId = this.getAttribute('data-movie-id');
@@ -77,6 +144,60 @@
             } catch (error) {
                 alert('Error submitting rating: ' + error.message);
             }
+        });
+
+        // New review submission code
+        document.getElementById('review-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const content = document.getElementById('review-content').value.trim();
+            
+            if (content) {
+                try {
+                    const response = await fetch(`/api/reviews/{{movie.id}}`, {
+                        method: 'POST',
+                        body: JSON.stringify({ content }),
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to submit review');
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('Error submitting review');
+                }
+            }
+        });
+
+        // Edit review handling
+        document.querySelectorAll('.edit-review-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const reviewBox = e.target.closest('.review-box');
+                const reviewId = reviewBox.dataset.reviewId;
+                const content = reviewBox.querySelector('.content p').textContent;
+                const newContent = prompt('Edit your review:', content);
+
+                if (newContent && newContent !== content) {
+                    try {
+                        const response = await fetch(`/api/reviews/${reviewId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ content: newContent }),
+                            headers: { 'Content-Type': 'application/json' },
+                        });
+
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Failed to update review');
+                        }
+                    } catch (err) {
+                        console.error('Error:', err);
+                        alert('Error updating review');
+                    }
+                }
+            });
         });
     </script>
     {{/if}}

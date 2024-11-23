@@ -21,7 +21,8 @@ const tmdbAPI = {
                 description: movie.overview,
                 releaseYear: new Date(movie.release_date).getFullYear(),
                 imageSrc: `${IMAGE_BASE_URL}${movie.poster_path}`,
-                averageRating: movie.vote_average / 2 // Convert TMDB's 10-point scale to our 5-point scale
+                averageRating: movie.vote_average / 2, // Convert TMDB's 10-point scale to our 5-point scale
+                tmdbId: movie.id // Add this line to include TMDB ID
             }));
         } catch (error) {
             console.error('Error fetching popular movies:', error);
@@ -29,27 +30,33 @@ const tmdbAPI = {
         }
     },
 
-    // Search movies
-    searchMovies: async (query, page = 1) => {
+    // Get movie details
+    getMovieDetails: async (movieId) => {
         try {
-            const response = await axios.get(`${BASE_URL}/search/movie`, {
+            const movieResponse = await axios.get(`${BASE_URL}/movie/${movieId}`, {
                 params: {
-                    api_key: TMDB_API_KEY,
-                    query: query,
-                    page: page
+                    api_key: TMDB_API_KEY
                 }
             });
 
-            return response.data.results.map(movie => ({
-                title: movie.title,
-                description: movie.overview,
-                releaseYear: new Date(movie.release_date).getFullYear(),
-                imageSrc: `${IMAGE_BASE_URL}${movie.poster_path}`,
-                averageRating: movie.vote_average / 2
-            }));
+            const reviewsResponse = await axios.get(`${BASE_URL}/movie/${movieId}/reviews`, {
+                params: {
+                    api_key: TMDB_API_KEY
+                }
+            });
+
+            return {
+                tmdbRating: movieResponse.data.vote_average,
+                tmdbReviews: reviewsResponse.data.results,
+                voteCount: movieResponse.data.vote_count
+            };
         } catch (error) {
-            console.error('Error searching movies:', error);
-            throw error;
+            console.error('Error fetching movie details:', error);
+            return {
+                tmdbRating: 0,
+                tmdbReviews: [],
+                voteCount: 0
+            };
         }
     }
 };
